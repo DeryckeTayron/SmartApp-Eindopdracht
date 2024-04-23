@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vend_app/qrscan.dart';
+import 'package:vend_app/settings.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -32,6 +34,24 @@ class _DashboardPageState extends State<DashboardPage> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  void navigateToHome() {
+    // Replace with your actual Home screen widget
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DashboardPage()));
+  }
+
+  // void navigateToQrScan() {
+  //   // Replace with your actual Business screen widget
+  //   Navigator.push(
+  //       context, MaterialPageRoute(builder: (context) => QrScanPage()));
+  // }
+
+  void navigateToSettings() {
+    // Replace with your actual Settings screen widget
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => MySettingsPage()));
   }
 
   @override
@@ -91,17 +111,28 @@ class _DashboardPageState extends State<DashboardPage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Business',
+            icon: Icon(Icons.qr_code),
+            label: 'QR-Scan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'School',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
-        // currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        // onTap: _onItemTapped,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              navigateToHome();
+              break;
+            case 1:
+              // navigateToQrScan();
+              break;
+            case 2:
+              navigateToSettings();
+              break;
+          }
+        },
       ),
     );
   }
