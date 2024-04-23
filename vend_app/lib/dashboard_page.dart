@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vend_app/qrscan.dart';
 import 'package:vend_app/settings.dart';
 
 class DashboardPage extends StatefulWidget {
