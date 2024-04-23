@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-// import 'package:url_launcher/url_launcher.dart';
-
-import 'package:geolocator/geolocator.dart';
+import 'dashboard_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,7 +32,7 @@ class StartupScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.white, // Change the background color if needed
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -56,43 +52,6 @@ class StartupScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class DashboardPage extends StatefulWidget {
-  @override
-  _DashboardPageState createState() => _DashboardPageState();
-}
-
-class _DashboardPageState extends State<DashboardPage> {
-  LatLng _initialLocation =
-      const LatLng(51.509364, -0.128928); // Default initial location (London)
-
-  @override
-  void initState() {
-    super.initState();
-    getUserLocation();
-  }
-
-  void getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: _initialLocation,
-          zoom: 13.0,
-        ),
-        children: [],
       ),
     );
   }
