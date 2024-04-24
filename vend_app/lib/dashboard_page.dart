@@ -35,12 +35,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void navigateToHome() {
-    // Replace with your actual Home screen widget
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DashboardPage()));
-  }
-
   // void navigateToQrScan() {
   //   // Replace with your actual Business screen widget
   //   Navigator.push(
@@ -48,7 +42,6 @@ class _DashboardPageState extends State<DashboardPage> {
   // }
 
   void navigateToSettings() {
-    // Replace with your actual Settings screen widget
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => MySettingsPage()));
   }
@@ -106,8 +99,8 @@ class _DashboardPageState extends State<DashboardPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.map),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.qr_code),
@@ -122,7 +115,6 @@ class _DashboardPageState extends State<DashboardPage> {
         onTap: (index) {
           switch (index) {
             case 0:
-              navigateToHome();
               break;
             case 1:
               // navigateToQrScan();

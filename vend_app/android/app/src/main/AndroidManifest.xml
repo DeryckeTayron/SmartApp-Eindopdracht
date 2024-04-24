@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!-- added for permissions -->
     <application
-        android:label="vend_app"
+        android:label="Vendapp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
