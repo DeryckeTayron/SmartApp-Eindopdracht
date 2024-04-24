@@ -1,13 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vend_app/auth.dart';
+import 'package:vend_app/widget_tree.dart';
 
-// ignore: use_key_in_widget_constructors
-class MySettingsPage extends StatelessWidget {
+class MySettingsPage extends StatefulWidget {
+  @override
+  _MySettingsPageState createState() => _MySettingsPageState();
+}
+
+class _MySettingsPageState extends State<MySettingsPage> {
   final User? currentUser = Auth().currentUser;
 
   Future<void> signOut() async {
     await Auth().signOut();
+    Navigator.pushAndRemoveUntil(
+      // Use Navigator.pushReplacement
+      context,
+      MaterialPageRoute(builder: (context) => const WidgetTree()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   Widget _title() {
@@ -58,8 +69,7 @@ class MySettingsPage extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text(currentUser?.email ??
-                'Not Logged In'), // Display user email or "Not Logged In"
+            title: _userUid(),
             trailing: _signOutButton(),
           ),
         ],
