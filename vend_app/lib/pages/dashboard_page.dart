@@ -62,9 +62,6 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
               onPressed: () => navigateToUserLogin(),
               icon: const Icon(Icons.filter_list_rounded)),
-          IconButton(
-              onPressed: () => navigateToUserLogin(),
-              icon: const Icon(Icons.person))
         ],
       ),
       body: FutureBuilder<Position>(
