@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vend_app/login.dart';
-import 'package:vend_app/settings.dart';
+import 'package:vend_app/pages/settings_page.dart';
 
+// ignore: use_key_in_widget_constructors
 class DashboardPage extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _DashboardPageState createState() => _DashboardPageState();
 }
 
@@ -48,8 +49,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void navigateToUserLogin() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+    // Navigator.push(
+    //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override

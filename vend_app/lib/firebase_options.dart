@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'vendapp-2e5cc.appspot.com',
     measurementId: 'G-6PM9KB8V0V',
   );
+
 }
