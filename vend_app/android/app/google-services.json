@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573478722452",
+    "project_id": "vendapp-2e5cc",
+    "storage_bucket": "vendapp-2e5cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573478722452:android:37ccbe811f718cef720d81",
+        "android_client_info": {
+          "package_name": "com.example.vend_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvLmAzCxCvIOoiAJDaKNL6Ez1P4gF5XSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

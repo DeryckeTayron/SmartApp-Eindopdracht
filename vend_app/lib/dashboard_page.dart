@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vend_app/login.dart';
 import 'package:vend_app/settings.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -46,11 +47,24 @@ class _DashboardPageState extends State<DashboardPage> {
         context, MaterialPageRoute(builder: (context) => MySettingsPage()));
   }
 
+  void navigateToUserLogin() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+              onPressed: () => navigateToUserLogin(),
+              icon: const Icon(Icons.filter_list_rounded)),
+          IconButton(
+              onPressed: () => navigateToUserLogin(),
+              icon: const Icon(Icons.person))
+        ],
       ),
       body: FutureBuilder<Position>(
         future: getCurrentLocation(),
