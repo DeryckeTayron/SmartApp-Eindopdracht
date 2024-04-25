@@ -52,16 +52,6 @@ class _MySettingsPageState extends State<MySettingsPage> {
             ),
           ),
           ListTile(
-            title: const Text('Notifications'),
-            trailing: Checkbox(
-              value: // Replace with logic to check current notification setting
-                  true, // Placeholder, replace with your notification state
-              onChanged: (value) {
-                // Implement logic to toggle notifications
-              },
-            ),
-          ),
-          ListTile(
             title: const Text('About Us'),
             onTap: () {
               // Navigate to About Us page (optional)

@@ -53,6 +53,27 @@ class _DashboardPageState extends State<DashboardPage> {
     //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
+  late final vendingMachineMarkers = <Marker>[
+    buildPin(const LatLng(51.51868093513547, -0.12835376940892318)),
+    buildPin(const LatLng(53.33360293799854, -6.284001062079881)),
+  ];
+
+  Marker buildPin(LatLng point) => Marker(
+        point: point,
+        width: 60,
+        height: 60,
+        child: GestureDetector(
+          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tapped existing marker'),
+              duration: Duration(seconds: 1),
+              showCloseIcon: true,
+            ),
+          ),
+          child: const Icon(Icons.location_pin, size: 60, color: Colors.blue),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +98,11 @@ class _DashboardPageState extends State<DashboardPage> {
               options: MapOptions(
                 //use my variables to center the map on my location
                 initialCenter: LatLng(_latitude, _longitude),
+                onTap: (_, p) =>
+                    setState(() => vendingMachineMarkers.add(buildPin(p))),
+                interactionOptions: const InteractionOptions(
+                  flags: ~InteractiveFlag.doubleTapZoom,
+                ),
               ),
               children: [
                 TileLayer(
@@ -97,6 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
+                MarkerLayer(markers: vendingMachineMarkers)
               ],
             );
           } else if (snapshot.hasError) {

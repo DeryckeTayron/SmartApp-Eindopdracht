@@ -46,15 +46,17 @@ class _LoginPageState extends State<LoginPage> {
     return const Text('Login/Register');
   }
 
-  Widget _entryfield(
-    String title,
-    TextEditingController controller,
-  ) {
+  Widget _entryfield(String title, TextEditingController controller,
+      [bool? isPassword]) {
     return TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: title,
-        ));
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: title,
+      ),
+      obscureText: isPassword ?? false,
+      enableSuggestions: isPassword ?? true,
+      autocorrect: isPassword ?? true,
+    );
   }
 
   Widget _errorMessage() {
@@ -95,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _entryfield('email', _controllerEmail),
-            _entryfield('password', _controllerPassword),
+            _entryfield('password', _controllerPassword, true),
             _errorMessage(),
             _submitButton(),
             _loginOrRegisterButton(),
