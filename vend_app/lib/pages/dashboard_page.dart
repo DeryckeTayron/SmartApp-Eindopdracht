@@ -1,8 +1,16 @@
+// ignore_for_file: avoid_print
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vend_app/auth.dart';
+import 'package:vend_app/models/vending_machine.dart';
 import 'package:vend_app/pages/settings_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+import 'package:vend_app/widgets/marker_popup.dart';
 
 // ignore: use_key_in_widget_constructors
 class DashboardPage extends StatefulWidget {
@@ -11,9 +19,66 @@ class DashboardPage extends StatefulWidget {
   _DashboardPageState createState() => _DashboardPageState();
 }
 
+enum MachineTypes {
+  beverages('Beverages'),
+  bread('Bread'),
+  snacks('Snacks'),
+  extra('Extra');
+
+  const MachineTypes(this.label);
+  final String label;
+}
+
+class VendingMachineMarker extends Marker {
+  VendingMachineMarker({required this.vendingMachine})
+      : super(
+          point: LatLng(vendingMachine.latitude, vendingMachine.longitude),
+          width: 60,
+          height: 60,
+          child: const Icon(Icons.location_pin, size: 60, color: Colors.blue),
+        );
+
+  final VendingMachine vendingMachine;
+}
+
 class _DashboardPageState extends State<DashboardPage> {
   double _latitude = 0.0;
   double _longitude = 0.0;
+
+  final User currentUser = Auth().currentUser!;
+
+  CollectionReference vendingMachinesCollection =
+      FirebaseFirestore.instance.collection('vendingMachines');
+
+  late final vendingMachines = <VendingMachine>[];
+
+  late final vendingMachineMarkers = vendingMachines
+      .map(
+        (vendingMachine) => buildPin(
+          LatLng(vendingMachine.latitude, vendingMachine.longitude),
+        ),
+      )
+      .toList();
+
+  Future<void> fetchVendingMachines() async {
+    vendingMachinesCollection.get().then(
+      (querySnapshot) {
+        for (var snapshot in querySnapshot.docs) {
+          final data = snapshot.data();
+          if (data != null) {
+            final latitude = snapshot.get('latitude') as double;
+            final longitude = snapshot.get('longitude') as double;
+            final userId = snapshot.get('userId') as String;
+            vendingMachines.add(VendingMachine(userId, latitude, longitude));
+          } else {
+            print(
+                'Error: Missing data in vending machine document ${snapshot.id}');
+          }
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+  }
 
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -48,31 +113,94 @@ class _DashboardPageState extends State<DashboardPage> {
         context, MaterialPageRoute(builder: (context) => MySettingsPage()));
   }
 
-  void navigateToUserLogin() {
+  void filterVendingMachines() {
     // Navigator.push(
     //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
-  late final vendingMachineMarkers = <Marker>[
-    buildPin(const LatLng(51.51868093513547, -0.12835376940892318)),
-    buildPin(const LatLng(53.33360293799854, -6.284001062079881)),
-  ];
+  Future<void> addVendingMachine(LatLng point) {
+    return vendingMachinesCollection
+        .add({
+          'userId': currentUser.uid,
+          'longitude': point.longitude,
+          'latitude': point.latitude
+          // 'type': point.type
+        })
+        .then((value) => print("Vending machine added"))
+        .catchError((error) => print("Failed to add vending machine: $error"));
+  }
 
   Marker buildPin(LatLng point) => Marker(
         point: point,
         width: 60,
         height: 60,
-        child: GestureDetector(
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Tapped existing marker'),
-              duration: Duration(seconds: 1),
-              showCloseIcon: true,
-            ),
-          ),
-          child: const Icon(Icons.location_pin, size: 60, color: Colors.blue),
-        ),
+        child: const Icon(Icons.location_pin, size: 60, color: Colors.blue),
       );
+
+  void _showVendingMachineDialog(LatLng point) {
+    final nameController = TextEditingController(); // Empty controller for name
+    String selectedMachineType = ''; // Empty string for machine type
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Vending Machine'),
+        content: SingleChildScrollView(
+          // Allow scrolling if content overflows
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Prevent excessive dialog height
+            children: [
+              TextField(
+                controller: nameController, // Bind controller to TextField
+                decoration: const InputDecoration(
+                  labelText: 'Name (Optional)',
+                ),
+              ),
+              const SizedBox(height: 10), // Add some spacing between fields
+              DropdownMenu<MachineTypes>(
+                dropdownMenuEntries: MachineTypes.values
+                    .map<DropdownMenuEntry<MachineTypes>>((MachineTypes color) {
+                  return DropdownMenuEntry<MachineTypes>(
+                    value: color,
+                    label: color.label,
+                    enabled: color.label != 'Grey',
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Add vending machine logic here with form data
+              final name = nameController.text; // Get name from TextField
+              final machineType =
+                  selectedMachineType; // Get selected machine type
+
+              // Call addVendingMachine with data from form
+
+              // DEZE SHIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+              // addVendingMachine(point, name, machineType);
+
+              Navigator.pop(context);
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchVendingMachines();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +209,7 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text('Dashboard'),
         actions: [
           IconButton(
-              onPressed: () => navigateToUserLogin(),
+              onPressed: () => filterVendingMachines(),
               icon: const Icon(Icons.filter_list_rounded)),
         ],
       ),
@@ -98,8 +226,13 @@ class _DashboardPageState extends State<DashboardPage> {
               options: MapOptions(
                 //use my variables to center the map on my location
                 initialCenter: LatLng(_latitude, _longitude),
-                onTap: (_, p) =>
-                    setState(() => vendingMachineMarkers.add(buildPin(p))),
+                onLongPress: (_, p) => {
+                  setState(() => vendingMachines.add(VendingMachine(
+                      currentUser.uid, p.latitude, p.longitude))),
+                  _showVendingMachineDialog(p),
+                  // addVendingMachine(p)
+                },
+
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.doubleTapZoom,
                 ),
@@ -123,7 +256,27 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
-                MarkerLayer(markers: vendingMachineMarkers)
+                MarkerLayer(
+                  markers: vendingMachineMarkers,
+                ),
+                PopupMarkerLayer(
+                  options: PopupMarkerLayerOptions(
+                    markers: vendingMachines
+                        .map((vendingMachine) => VendingMachineMarker(
+                            vendingMachine: vendingMachine))
+                        .toList(),
+                    popupDisplayOptions: PopupDisplayOptions(
+                      builder: (BuildContext context, Marker marker) {
+                        if (marker is VendingMachineMarker) {
+                          return VendingMachineMarkerPopup(
+                            vendingMachine: marker.vendingMachine,
+                          );
+                        }
+                        return const Card(child: Text('Not a vending machine'));
+                      },
+                    ),
+                  ),
+                ),
               ],
             );
           } else if (snapshot.hasError) {
