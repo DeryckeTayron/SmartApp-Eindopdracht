@@ -50,9 +50,11 @@ class _DashboardPageState extends State<DashboardPage> {
   CollectionReference vendingMachinesCollection =
       FirebaseFirestore.instance.collection('vendingMachines');
 
-  late final vendingMachines = <VendingMachine>[];
+  late var vendingMachines = <VendingMachine>[];
 
-  late final vendingMachineMarkers = vendingMachines
+  // late var tempVendingMachine = <VendingMachine>[];
+
+  late var vendingMachineMarkers = vendingMachines
       .map(
         (vendingMachine) => buildPin(
           LatLng(vendingMachine.latitude, vendingMachine.longitude),
@@ -69,7 +71,10 @@ class _DashboardPageState extends State<DashboardPage> {
             final latitude = snapshot.get('latitude') as double;
             final longitude = snapshot.get('longitude') as double;
             final userId = snapshot.get('userId') as String;
-            vendingMachines.add(VendingMachine(userId, latitude, longitude));
+            final machineType = snapshot.get('machineType') as String;
+            final machineName = snapshot.get('machineName') as String;
+            vendingMachines.add(VendingMachine(
+                userId, latitude, longitude, machineType, machineName));
           } else {
             print(
                 'Error: Missing data in vending machine document ${snapshot.id}');
@@ -118,24 +123,37 @@ class _DashboardPageState extends State<DashboardPage> {
     //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
-  Future<void> addVendingMachine(LatLng point) {
+// function to add a vending machine with its properties
+  Future<void> addVendingMachine(LatLng point, machineName, machineType) {
     return vendingMachinesCollection
         .add({
           'userId': currentUser.uid,
           'longitude': point.longitude,
-          'latitude': point.latitude
-          // 'type': point.type
+          'latitude': point.latitude,
+          'machineName': machineName,
+          'machineType': machineType
         })
         .then((value) => print("Vending machine added"))
         .catchError((error) => print("Failed to add vending machine: $error"));
   }
 
+// function to build pin on map
   Marker buildPin(LatLng point) => Marker(
         point: point,
         width: 60,
         height: 60,
         child: const Icon(Icons.location_pin, size: 60, color: Colors.blue),
       );
+
+// function to put get machinetype from dropdown
+  MachineTypes getMachineTypeFromString(String typeString) {
+    for (final machineType in MachineTypes.values) {
+      if (machineType.label == typeString) {
+        return machineType;
+      }
+    }
+    throw Exception('Invalid machine type string: $typeString');
+  }
 
   void _showVendingMachineDialog(LatLng point) {
     final nameController = TextEditingController(); // Empty controller for name
@@ -157,13 +175,24 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
               const SizedBox(height: 10), // Add some spacing between fields
-              DropdownMenu<MachineTypes>(
-                dropdownMenuEntries: MachineTypes.values
-                    .map<DropdownMenuEntry<MachineTypes>>((MachineTypes color) {
-                  return DropdownMenuEntry<MachineTypes>(
-                    value: color,
-                    label: color.label,
-                    enabled: color.label != 'Grey',
+              DropdownButtonFormField<MachineTypes>(
+                // Set initial value (optional)
+                value: selectedMachineType.isEmpty
+                    ? null
+                    : getMachineTypeFromString(selectedMachineType),
+                onChanged: (MachineTypes? value) {
+                  if (value != null) {
+                    selectedMachineType = value.label; // Update on change
+                  }
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Machine Type',
+                ),
+                items: MachineTypes.values
+                    .map<DropdownMenuItem<MachineTypes>>((MachineTypes type) {
+                  return DropdownMenuItem<MachineTypes>(
+                    value: type,
+                    child: Text(type.label),
                   );
                 }).toList(),
               ),
@@ -172,7 +201,10 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => {
+              Navigator.pop(context),
+              setState(() => vendingMachines = <VendingMachine>[])
+            },
             child: const Text('Cancel'),
           ),
           TextButton(
@@ -184,8 +216,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
               // Call addVendingMachine with data from form
 
-              // DEZE SHIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-              // addVendingMachine(point, name, machineType);
+              addVendingMachine(point, name, machineType);
 
               Navigator.pop(context);
             },
@@ -207,11 +238,11 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-              onPressed: () => filterVendingMachines(),
-              icon: const Icon(Icons.filter_list_rounded)),
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () => filterVendingMachines(),
+        //       icon: const Icon(Icons.filter_list_rounded)),
+        // ],
       ),
       body: FutureBuilder<Position>(
         future: getCurrentLocation(),
@@ -220,6 +251,8 @@ class _DashboardPageState extends State<DashboardPage> {
             // Update variables with retrieved data to use for my location on map
             _latitude = snapshot.data!.latitude;
             _longitude = snapshot.data!.longitude;
+            String machineType = '';
+            String machineName = '';
 
             return FlutterMap(
               mapController: MapController(),
@@ -228,9 +261,14 @@ class _DashboardPageState extends State<DashboardPage> {
                 initialCenter: LatLng(_latitude, _longitude),
                 onLongPress: (_, p) => {
                   setState(() => vendingMachines.add(VendingMachine(
-                      currentUser.uid, p.latitude, p.longitude))),
-                  _showVendingMachineDialog(p),
-                  // addVendingMachine(p)
+                      currentUser.uid,
+                      p.latitude,
+                      p.longitude,
+                      machineType,
+                      machineName))),
+                  _showVendingMachineDialog(
+                    p,
+                  ),
                 },
 
                 interactionOptions: const InteractionOptions(
