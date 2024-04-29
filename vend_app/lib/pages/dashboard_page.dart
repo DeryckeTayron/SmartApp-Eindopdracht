@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:vend_app/auth.dart';
 import 'package:vend_app/models/vending_machine.dart';
+import 'package:vend_app/pages/qr_scan_page.dart';
 import 'package:vend_app/pages/settings_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -123,18 +125,16 @@ class _DashboardPageState extends State<DashboardPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  // void navigateToQrScan() {
-  //   // Replace with your actual Business screen widget
-  //   Navigator.push(
-  //       context, MaterialPageRoute(builder: (context) => QrScanPage()));
-  // }
+  void navigateToQrScan() {
+    // Replace with your actual Business screen widget
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const QrScanPage()));
+  }
 
   void navigateToSettings() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const MySettingsPage()));
   }
-
-
 
 // enables a dark mode map
   Widget _darkModeTileBuilder(
@@ -307,6 +307,46 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  Future<void> requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (status.isGranted) {
+      // Camera access granted, proceed with QR code scanning
+      Navigator.push(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (context) => const QrScanPage()),
+      );
+    } else if (status.isDenied) {
+      // Explain why the permission is needed and offer to request again
+      await showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Camera Permission Required'),
+          content: const Text(
+              'This app needs access to the camera to scan QR codes. Would you like to grant permission?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await Permission.camera.request();
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
+              },
+              child: const Text('Grant Permission'),
+            ),
+          ],
+        ),
+      );
+    } else if (status.isPermanentlyDenied) {
+      // Open app settings to grant permission
+      await openAppSettings();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -417,7 +457,7 @@ class _DashboardPageState extends State<DashboardPage> {
             case 0:
               break;
             case 1:
-              // navigateToQrScan();
+              requestCameraPermission();
               break;
             case 2:
               navigateToSettings();
