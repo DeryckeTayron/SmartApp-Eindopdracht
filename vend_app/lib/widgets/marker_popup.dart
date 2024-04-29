@@ -1,19 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:vend_app/models/vending_machine.dart';
 
 class VendingMachineMarkerPopup extends StatelessWidget {
   final VendingMachine vendingMachine;
   final Function onDelete;
 
-
-
   VendingMachineMarkerPopup(
       {super.key, required this.vendingMachine, required this.onDelete});
 
-  CollectionReference vendingMachinesCollection =
+  final CollectionReference vendingMachinesCollection =
       FirebaseFirestore.instance.collection('vendingMachines');
 
   @override
@@ -57,7 +53,6 @@ class VendingMachineMarkerPopup extends StatelessWidget {
                 icon: const Icon(Icons.delete, size: 20.0),
                 onPressed: () {
                   onDelete(vendingMachine);
-
                 },
               ),
             ],

@@ -5,6 +5,8 @@ import 'package:vend_app/widget_tree.dart';
 import 'package:vend_app/widgets/dark_mode_button.dart';
 
 class MySettingsPage extends StatefulWidget {
+  const MySettingsPage({super.key});
+
   @override
   _MySettingsPageState createState() => _MySettingsPageState();
 }
@@ -16,6 +18,7 @@ class _MySettingsPageState extends State<MySettingsPage> {
     await Auth().signOut();
     Navigator.pushAndRemoveUntil(
       // Use Navigator.pushReplacement
+      // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(builder: (context) => const WidgetTree()),
       (Route<dynamic> route) => false,
@@ -43,8 +46,8 @@ class _MySettingsPageState extends State<MySettingsPage> {
       ),
       body: ListView(
         children: [
-          ListTile(
-            title: const Text('Dark Mode'),
+          const ListTile(
+            title: Text('Dark Mode'),
             trailing: DarkModeToggleButton(),
           ),
           ListTile(

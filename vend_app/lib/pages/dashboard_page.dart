@@ -80,7 +80,7 @@ class _DashboardPageState extends State<DashboardPage> {
             final userId = snapshot.get('userId') as String;
             final machineType = snapshot.get('machineType') as String;
             final machineName = snapshot.get('machineName') as String;
-            final id = snapshot.id as String;
+            final id = snapshot.id;
             vendingMachines.add(VendingMachine(
                 userId, latitude, longitude, machineType, machineName, id));
           } else {
@@ -122,8 +122,8 @@ class _DashboardPageState extends State<DashboardPage> {
   // }
 
   void navigateToSettings() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => MySettingsPage()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const MySettingsPage()));
   }
 
   void filterVendingMachines() {
@@ -168,7 +168,7 @@ class _DashboardPageState extends State<DashboardPage> {
           'machineType': machineType
         })
         .then((value) => value.id)
-        .catchError((error) => print("Failed to add vending machine: $error"));
+        .catchError((error) => "Failed to add vending machine");
   }
 
 // function to build pin on map
@@ -213,6 +213,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a name';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 10), // Add some spacing between fields
@@ -240,6 +241,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     if (value == null) {
                       return 'Please choose a vending machine type';
                     }
+                    return null;
                   },
                 ),
               ],
@@ -274,6 +276,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     machineType,
                     name,
                     id)));
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               }
             },
@@ -304,8 +307,6 @@ class _DashboardPageState extends State<DashboardPage> {
             // Update variables with retrieved data to use for my location on map
             _latitude = snapshot.data!.latitude;
             _longitude = snapshot.data!.longitude;
-            String machineType = '';
-            String machineName = '';
 
             return FlutterMap(
               mapController: MapController(),
