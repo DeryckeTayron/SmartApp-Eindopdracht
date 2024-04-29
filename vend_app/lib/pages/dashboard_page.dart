@@ -15,15 +15,18 @@ import 'package:vend_app/theme/theme.dart';
 import 'package:vend_app/theme/theme_provider.dart';
 import 'package:vend_app/widgets/marker_popup.dart';
 
-// ignore: use_key_in_widget_constructors
 class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
+
   @override
   // ignore: library_private_types_in_public_api
   _DashboardPageState createState() => _DashboardPageState();
 }
 
+// enables verification for forminput
 final _formKey = GlobalKey<FormState>();
 
+// holds machinetypes for dropdown
 enum MachineTypes {
   beverages('Beverages'),
   bread('Bread'),
@@ -34,12 +37,13 @@ enum MachineTypes {
   final String label;
 }
 
+// an extention on markers for vending machines
 class VendingMachineMarker extends Marker {
   VendingMachineMarker({required this.vendingMachine})
       : super(
           point: LatLng(vendingMachine.latitude, vendingMachine.longitude),
-          width: 60,
-          height: 60,
+          width: 40,
+          height: 40,
           child: const Icon(Icons.location_pin, size: 60, color: vendAppBlue),
         );
 
@@ -52,15 +56,17 @@ class _DashboardPageState extends State<DashboardPage> {
 
   final User currentUser = Auth().currentUser!;
 
+// gets vendingmachines from database
   CollectionReference vendingMachinesCollection =
       FirebaseFirestore.instance.collection('vendingMachines');
 
+// stores the vendingmachinedata
   late var vendingMachines = <VendingMachine>[];
 
-  // late var tempVendingMachine = <VendingMachine>[];
-
+// enables closing popups when deleting vendingmachines
   final PopupController _popupLayerController = PopupController();
 
+// enables building the vendingmachinemarkers on the map
   late var vendingMachineMarkers = vendingMachines
       .map(
         (vendingMachine) => buildPin(
@@ -69,6 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
       )
       .toList();
 
+// fetches the vendingmachines from database to display on map
   Future<void> fetchVendingMachines() async {
     vendingMachinesCollection.get().then(
       (querySnapshot) {
@@ -93,6 +100,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+// asks for and gets current location so map can find you
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -126,27 +134,42 @@ class _DashboardPageState extends State<DashboardPage> {
         MaterialPageRoute(builder: (context) => const MySettingsPage()));
   }
 
-  void filterVendingMachines() {
-    // Navigator.push(
-    //     context, MaterialPageRoute(builder: (context) => const LoginPage()));
-  }
-
+// enables a dark mode map
   Widget _darkModeTileBuilder(
     BuildContext context,
     Widget tileWidget,
     TileImage tile,
   ) {
     return ColorFiltered(
-      colorFilter: const ColorFilter.matrix(<double>[
-        -0.2126, -0.7152, -0.0722, 0, 255, // Red channel
-        -0.2126, -0.7152, -0.0722, 0, 255, // Green channel
-        -0.2126, -0.7152, -0.0722, 0, 255, // Blue channel
-        0, 0, 0, 1, 0, // Alpha channel
-      ]),
+      colorFilter: const ColorFilter.matrix(
+        <double>[
+          -0.2126,
+          -0.7152,
+          -0.0722,
+          0,
+          255,
+          -0.2126,
+          -0.7152,
+          -0.0722,
+          0,
+          255,
+          -0.2126,
+          -0.7152,
+          -0.0722,
+          0,
+          255,
+          0,
+          0,
+          0,
+          1,
+          0,
+        ],
+      ),
       child: tileWidget,
     );
   }
 
+// enables deletion of vending machines
   void deleteVendingMachine(VendingMachine vendingMachine) => {
         vendingMachinesCollection.doc(vendingMachine.id).delete().then(
               (doc) => print("Document deleted"),
@@ -157,7 +180,7 @@ class _DashboardPageState extends State<DashboardPage> {
         _popupLayerController.hideAllPopups()
       };
 
-// function to add a vending machine with its properties
+// enables adding a vending machine with its properties to the database
   Future<String> addVendingMachine(LatLng point, machineName, machineType) {
     return vendingMachinesCollection
         .add({
@@ -179,7 +202,7 @@ class _DashboardPageState extends State<DashboardPage> {
         child: const Icon(Icons.location_pin, size: 60, color: vendAppBlue),
       );
 
-// function to put get machinetype from dropdown
+// enables sending machinetype to database, it gets machinetype from the dropdown
   MachineTypes getMachineTypeFromString(String typeString) {
     for (final machineType in MachineTypes.values) {
       if (machineType.label == typeString) {
@@ -189,9 +212,10 @@ class _DashboardPageState extends State<DashboardPage> {
     throw Exception('Invalid machine type string: $typeString');
   }
 
+// displays a form which lets you input data to send to firestore database
   void _showVendingMachineDialog(LatLng point) {
-    final nameController = TextEditingController(); // Empty controller for name
-    String selectedMachineType = ''; // Empty string for machine type
+    final nameController = TextEditingController();
+    String selectedMachineType = '';
 
     showDialog(
       context: context,
@@ -200,12 +224,11 @@ class _DashboardPageState extends State<DashboardPage> {
         content: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            // Allow scrolling if content overflows
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Prevent excessive dialog height
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  controller: nameController, // Bind controller to TextField
+                  controller: nameController,
                   decoration: const InputDecoration(
                     labelText: 'Name',
                   ),
@@ -258,16 +281,11 @@ class _DashboardPageState extends State<DashboardPage> {
           TextButton(
             onPressed: () async {
               // Add vending machine logic here with form data
-              final name = nameController.text; // Get name from TextField
-              final machineType =
-                  selectedMachineType; // Get selected machine type
+              final name = nameController.text;
+              final machineType = selectedMachineType;
 
               // Call addVendingMachine with data from form
-
               if (_formKey.currentState!.validate()) {
-                // Form is valid, add vending machine logic here
-                // Use nameController.text and selectedMachineType for data
-
                 var id = await addVendingMachine(point, name, machineType);
                 setState(() => vendingMachines.add(VendingMachine(
                     currentUser.uid,
@@ -297,9 +315,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Dashboard'),
-      // ),
       body: FutureBuilder<Position>(
         future: getCurrentLocation(),
         builder: (context, snapshot) {

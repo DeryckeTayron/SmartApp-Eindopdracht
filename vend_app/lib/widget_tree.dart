@@ -17,7 +17,7 @@ class _WidgetTreeState extends State<WidgetTree> {
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return DashboardPage();
+          return const DashboardPage();
         } else {
           return const LoginPage();
         }
