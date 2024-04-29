@@ -374,6 +374,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   _showVendingMachineDialog(
                     p,
                   ),
+                  print(vendingMachineMarkers)
                 },
 
                 interactionOptions: const InteractionOptions(
@@ -400,9 +401,6 @@ class _DashboardPageState extends State<DashboardPage> {
                       rotate: true,
                     ),
                   ],
-                ),
-                MarkerLayer(
-                  markers: vendingMachineMarkers,
                 ),
                 PopupMarkerLayer(
                   options: PopupMarkerLayerOptions(
