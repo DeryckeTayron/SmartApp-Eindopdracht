@@ -1,10 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:vend_app/models/vending_machine.dart';
 
 class VendingMachineMarkerPopup extends StatelessWidget {
   final VendingMachine vendingMachine;
+  final Function onDelete;
 
-  const VendingMachineMarkerPopup({super.key, required this.vendingMachine});
+
+
+  VendingMachineMarkerPopup(
+      {super.key, required this.vendingMachine, required this.onDelete});
+
+  CollectionReference vendingMachinesCollection =
+      FirebaseFirestore.instance.collection('vendingMachines');
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +22,7 @@ class VendingMachineMarkerPopup extends StatelessWidget {
       width: 200,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
           BoxShadow(
@@ -25,24 +35,30 @@ class VendingMachineMarkerPopup extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(
-            vendingMachine.machineName.toString(),
-            style: const TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              vendingMachine.machineName.toString(),
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 8.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Type: ',
-                style: TextStyle(fontSize: 16.0, color: Colors.grey),
-              ),
               Text(
                 vendingMachine.machineType,
                 style: const TextStyle(fontSize: 16.0),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, size: 20.0),
+                onPressed: () {
+                  onDelete(vendingMachine);
+
+                },
               ),
             ],
           ),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vend_app/auth.dart';
 import 'package:vend_app/widget_tree.dart';
+import 'package:vend_app/widgets/dark_mode_button.dart';
 
 class MySettingsPage extends StatefulWidget {
   @override
@@ -36,6 +37,7 @@ class _MySettingsPageState extends State<MySettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: _title(),
       ),
@@ -43,13 +45,7 @@ class _MySettingsPageState extends State<MySettingsPage> {
         children: [
           ListTile(
             title: const Text('Dark Mode'),
-            trailing: Switch(
-              value: // Replace with logic to check current dark mode setting
-                  false, // Placeholder, replace with your dark mode state
-              onChanged: (value) {
-                // Implement logic to toggle dark mode
-              },
-            ),
+            trailing: DarkModeToggleButton(),
           ),
           ListTile(
             title: const Text('About Us'),
