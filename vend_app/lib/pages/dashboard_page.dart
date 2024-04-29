@@ -134,6 +134,8 @@ class _DashboardPageState extends State<DashboardPage> {
         MaterialPageRoute(builder: (context) => const MySettingsPage()));
   }
 
+
+
 // enables a dark mode map
   Widget _darkModeTileBuilder(
     BuildContext context,

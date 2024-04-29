@@ -8,8 +8,8 @@ ThemeData lightMode = ThemeData(
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
       background: vendAppWhite,
-      primary: Colors.pink.shade300,
-      secondary: Colors.pink.shade200),
+      primary: Colors.purple.shade300,
+      secondary: Colors.purple.shade200),
 );
 
 ThemeData darkMode = ThemeData(

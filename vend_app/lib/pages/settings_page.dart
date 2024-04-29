@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vend_app/auth.dart';
+import 'package:vend_app/pages/about_us_page.dart';
 import 'package:vend_app/widget_tree.dart';
 import 'package:vend_app/widgets/dark_mode_button.dart';
 
@@ -17,7 +18,6 @@ class _MySettingsPageState extends State<MySettingsPage> {
   Future<void> signOut() async {
     await Auth().signOut();
     Navigator.pushAndRemoveUntil(
-      // Use Navigator.pushReplacement
       // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(builder: (context) => const WidgetTree()),
@@ -53,8 +53,8 @@ class _MySettingsPageState extends State<MySettingsPage> {
           ListTile(
             title: const Text('About Us'),
             onTap: () {
-              // Navigate to About Us page (optional)
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => MyAboutUsPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AboutUsPage()));
             },
           ),
           ListTile(
