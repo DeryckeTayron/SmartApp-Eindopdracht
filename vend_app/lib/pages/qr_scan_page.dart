@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:vend_app/theme/theme.dart';
+import 'package:vend_app/pages/vending_machine_info_page.dart';
 
 class QrScanPage extends StatefulWidget {
   const QrScanPage({super.key});
@@ -11,20 +11,25 @@ class QrScanPage extends StatefulWidget {
 }
 
 class _QrScanPageState extends State<QrScanPage> {
-  String _scanResult = "";
-
   Future<void> scanBarcode() async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          vendAppBlue as String, "Cancel", true, ScanMode.QR);
+          "#ff6666", "Cancel", true, ScanMode.QR);
     } on PlatformException {
-      barcodeScanRes = "Failed to scan";
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No id found'),
+        ),
+      );
+      return;
     }
 
-    setState(() {
-      _scanResult = barcodeScanRes;
-    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                VendingMachineInfoPage(scanResult: barcodeScanRes)));
   }
 
   @override
@@ -44,10 +49,6 @@ class _QrScanPageState extends State<QrScanPage> {
             ElevatedButton(
               onPressed: scanBarcode,
               child: const Text('Scan Code'),
-            ),
-            Text(
-              "Scan result : $_scanResult",
-              style: const TextStyle(fontSize: 16.0),
             ),
           ],
         ),
