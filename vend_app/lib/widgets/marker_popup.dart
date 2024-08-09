@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vend_app/models/vending_machine.dart';
 
@@ -16,6 +17,20 @@ class VendingMachineMarkerPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     String accountNameWithoutEmail =
         vendingMachine.accountName.split('@').first;
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userEmail = currentUser?.email;
+    const adminEmail = 'tayron.derycke@student.howest.be';
+
+    print(userEmail);
+
+    bool showDeleteButton = false;
+    if (currentUser != null) {
+      final userEmail = currentUser.email!;
+      showDeleteButton =
+          userEmail == vendingMachine.accountName || userEmail == adminEmail;
+    }
+
     return Container(
       width: 200,
       padding: const EdgeInsets.all(16.0),
@@ -63,11 +78,14 @@ class VendingMachineMarkerPopup extends StatelessWidget {
                 vendingMachine.machineType,
                 style: const TextStyle(fontSize: 16.0),
               ),
-              IconButton(
-                icon: const Icon(Icons.delete, size: 20.0),
-                onPressed: () {
-                  onDelete(vendingMachine);
-                },
+              Visibility(
+                visible: showDeleteButton,
+                child: IconButton(
+                  icon: const Icon(Icons.delete, size: 20.0),
+                  onPressed: () {
+                    onDelete(vendingMachine);
+                  },
+                ),
               ),
             ],
           ),
