@@ -4,8 +4,9 @@ class VendingMachine {
   final double longitude;
   final String machineType;
   final String machineName;
+  final String accountName;
   final String id;
 
   VendingMachine(this.userId, this.latitude, this.longitude, this.machineType,
-      this.machineName, this.id);
+      this.machineName, this.accountName, this.id);
 }

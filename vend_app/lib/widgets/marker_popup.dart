@@ -14,6 +14,8 @@ class VendingMachineMarkerPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String accountNameWithoutEmail =
+        vendingMachine.accountName.split('@').first;
     return Container(
       width: 200,
       padding: const EdgeInsets.all(16.0),
@@ -31,6 +33,18 @@ class VendingMachineMarkerPopup extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              "made by $accountNameWithoutEmail",
+              style: const TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.normal,
+                color: Color.fromARGB(128, 0, 0, 0),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8.0),
           Align(
             alignment: Alignment.topLeft,
             child: Text(

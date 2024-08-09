@@ -25,9 +25,10 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
           final userId = snapshot.get('userId') as String;
           final machineType = snapshot.get('machineType') as String;
           final machineName = snapshot.get('machineName') as String;
+          final accountName = snapshot.get('accountName') as String;
           final id = snapshot.id;
-          return VendingMachine(
-              userId, latitude, longitude, machineType, machineName, id);
+          return VendingMachine(userId, latitude, longitude, machineType,
+              machineName, accountName, id);
         } else {
           throw Exception(
               'No vending machine found with ID: ${widget.scanResult}');

@@ -89,9 +89,10 @@ class _DashboardPageState extends State<DashboardPage> {
             final userId = snapshot.get('userId') as String;
             final machineType = snapshot.get('machineType') as String;
             final machineName = snapshot.get('machineName') as String;
+            final accountName = snapshot.get('accountName') as String;
             final id = snapshot.id;
-            vendingMachines.add(VendingMachine(
-                userId, latitude, longitude, machineType, machineName, id));
+            vendingMachines.add(VendingMachine(userId, latitude, longitude,
+                machineType, machineName, accountName, id));
           } else {
             print(
                 'Error: Missing data in vending machine document ${snapshot.id}');
@@ -183,14 +184,16 @@ class _DashboardPageState extends State<DashboardPage> {
       };
 
 // enables adding a vending machine with its properties to the database
-  Future<String> addVendingMachine(LatLng point, machineName, machineType) {
+  Future<String> addVendingMachine(
+      LatLng point, machineName, machineType, accountName) {
     return vendingMachinesCollection
         .add({
           'userId': currentUser.uid,
           'longitude': point.longitude,
           'latitude': point.latitude,
           'machineName': machineName,
-          'machineType': machineType
+          'machineType': machineType,
+          'accountName': accountName
         })
         .then((value) => value.id)
         .catchError((error) => "Failed to add vending machine");
@@ -286,15 +289,19 @@ class _DashboardPageState extends State<DashboardPage> {
               final name = nameController.text;
               final machineType = selectedMachineType;
 
+              final accountName = FirebaseAuth.instance.currentUser!.email;
+
               // Call addVendingMachine with data from form
               if (_formKey.currentState!.validate()) {
-                var id = await addVendingMachine(point, name, machineType);
+                var id = await addVendingMachine(
+                    point, name, machineType, accountName);
                 setState(() => vendingMachines.add(VendingMachine(
                     currentUser.uid,
                     point.latitude,
                     point.longitude,
                     machineType,
                     name,
+                    accountName!,
                     id)));
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
