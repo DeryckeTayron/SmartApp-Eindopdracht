@@ -15,20 +15,16 @@ class VendingMachineMarkerPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String accountNameWithoutEmail =
-        vendingMachine.accountName.split('@').first;
+    String accountName = vendingMachine.accountName;
 
     final currentUser = FirebaseAuth.instance.currentUser;
-    final userEmail = currentUser?.email;
     const adminEmail = 'tayron.derycke@student.howest.be';
-
-    print(userEmail);
 
     bool showDeleteButton = false;
     if (currentUser != null) {
-      final userEmail = currentUser.email!;
+      final userEmail = currentUser.uid;
       showDeleteButton =
-          userEmail == vendingMachine.accountName || userEmail == adminEmail;
+          userEmail == vendingMachine.userId || userEmail == adminEmail;
     }
 
     return Container(
@@ -51,7 +47,7 @@ class VendingMachineMarkerPopup extends StatelessWidget {
           Align(
             alignment: Alignment.topLeft,
             child: Text(
-              "made by $accountNameWithoutEmail",
+              "made by $accountName",
               style: const TextStyle(
                 fontSize: 12.0,
                 fontWeight: FontWeight.normal,

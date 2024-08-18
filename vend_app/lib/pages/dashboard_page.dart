@@ -289,7 +289,15 @@ class _DashboardPageState extends State<DashboardPage> {
               final name = nameController.text;
               final machineType = selectedMachineType;
 
-              final accountName = FirebaseAuth.instance.currentUser!.email;
+              final userDoc = FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(currentUser.uid);
+              final userSnapshot = await userDoc.get();
+              final userData = userSnapshot.data();
+
+              final accountName = userData?['firstName'] != null
+                  ? '${userData?['firstName']} ${userData?['name'] ?? ''}'
+                  : 'Loading...'; // Use a placeholder while fetching data
 
               // Call addVendingMachine with data from form
               if (_formKey.currentState!.validate()) {
@@ -301,7 +309,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     point.longitude,
                     machineType,
                     name,
-                    accountName!,
+                    accountName,
                     id)));
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
@@ -377,6 +385,7 @@ class _DashboardPageState extends State<DashboardPage> {
               options: MapOptions(
                 //use my variables to center the map on my location
                 initialCenter: LatLng(_latitude, _longitude),
+
                 onLongPress: (_, p) => {
                   _showVendingMachineDialog(
                     p,
@@ -469,6 +478,17 @@ class _DashboardPageState extends State<DashboardPage> {
               break;
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Code to reload map and pins
+          fetchVendingMachines();
+          setState(() {});
+        },
+        child: const Icon(Icons.refresh),
+        backgroundColor: vendAppBlue,
+        shape: const CircleBorder(), // Use the same shape as your other buttons
+        elevation: 4, // Adjust elevation as needed
       ),
     );
   }

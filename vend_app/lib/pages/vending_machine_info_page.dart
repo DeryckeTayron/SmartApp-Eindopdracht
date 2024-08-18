@@ -83,7 +83,16 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
                 ],
               );
             } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
+              return const Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Center(
+                  child: Text(
+                    'You did not scan a valid QR-code. Please try again.',
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
             }
 
             return const CircularProgressIndicator();

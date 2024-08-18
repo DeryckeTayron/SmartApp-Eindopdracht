@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../auth.dart';
@@ -13,6 +14,8 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage = '';
   bool isLogin = true;
 
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerFirstName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
 
@@ -31,10 +34,22 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      await Auth().createUserWithEmailAndPassword(
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
+      final user = userCredential.user;
+
+      if (user != null) {
+        await user.updateDisplayName(
+            '${_controllerFirstName.text} ${_controllerName.text}');
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': _controllerName.text,
+          'firstName': _controllerFirstName.text,
+          'uid': user.uid, // Add user ID for reference
+        });
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -85,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: _title(),
       ),
@@ -96,6 +112,15 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Visibility(
+              visible: !isLogin,
+              child: Column(
+                children: [
+                  _entryfield('First Name', _controllerFirstName),
+                  _entryfield('Last Name', _controllerName),
+                ],
+              ),
+            ),
             _entryfield('email', _controllerEmail),
             _entryfield('password', _controllerPassword, true),
             _errorMessage(),
