@@ -18,13 +18,13 @@ class VendingMachineMarkerPopup extends StatelessWidget {
     String accountName = vendingMachine.accountName;
 
     final currentUser = FirebaseAuth.instance.currentUser;
-    const adminEmail = 'tayron.derycke@student.howest.be';
+    const adminUserID = 'H8U5E84SnlPHKPuCaEVHKq2CrqN2';
 
     bool showDeleteButton = false;
     if (currentUser != null) {
       final userEmail = currentUser.uid;
       showDeleteButton =
-          userEmail == vendingMachine.userId || userEmail == adminEmail;
+          userEmail == vendingMachine.userId || userEmail == adminUserID;
     }
 
     return Container(

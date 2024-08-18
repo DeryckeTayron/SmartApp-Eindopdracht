@@ -485,10 +485,10 @@ class _DashboardPageState extends State<DashboardPage> {
           fetchVendingMachines();
           setState(() {});
         },
-        child: const Icon(Icons.refresh),
         backgroundColor: vendAppBlue,
         shape: const CircleBorder(), // Use the same shape as your other buttons
-        elevation: 4, // Adjust elevation as needed
+        elevation: 4,
+        child: const Icon(Icons.refresh), // Adjust elevation as needed
       ),
     );
   }
