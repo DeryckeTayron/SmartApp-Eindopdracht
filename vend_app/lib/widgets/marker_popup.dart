@@ -29,7 +29,7 @@ class VendingMachineMarkerPopup extends StatelessWidget {
 
     return Container(
       width: 200,
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(15.0),
@@ -46,12 +46,14 @@ class VendingMachineMarkerPopup extends StatelessWidget {
         children: <Widget>[
           Align(
             alignment: Alignment.topLeft,
-            child: Text(
-              "made by $accountName",
-              style: const TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.normal,
-                color: Color.fromARGB(128, 0, 0, 0),
+            child: Opacity(
+              opacity: 0.5,
+              child: Text(
+                "made by $accountName",
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
             ),
           ),

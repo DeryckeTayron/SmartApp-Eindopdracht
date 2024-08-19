@@ -55,7 +55,7 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
                     MainAxisAlignment.center, // Center content vertically
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Center(
                       // Use Center widget for both horizontal & vertical centering
                       child: Text(
@@ -69,7 +69,7 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
                   ),
                   const SizedBox(height: 10), // Add space after machine name
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Center(
                       // Use Center widget for both horizontal & vertical centering
                       child: Text(
@@ -84,7 +84,7 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
               );
             } else if (snapshot.hasError) {
               return const Padding(
-                padding: EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(20.0),
                 child: Center(
                   child: Text(
                     'You did not scan a valid QR-code. Please try again.',
