@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:vend_app/models/vending_machine.dart';
 
 class VendingMachineInfoPage extends StatefulWidget {
@@ -59,7 +61,7 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
                     child: Center(
                       // Use Center widget for both horizontal & vertical centering
                       child: Text(
-                        "This vending machine is called ${vendingMachine.machineName}",
+                        vendingMachine.machineName,
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                         textAlign: TextAlign
@@ -77,6 +79,34 @@ class _VendingMachineInfoPageState extends State<VendingMachineInfoPage> {
                         style: const TextStyle(fontSize: 16),
                         textAlign: TextAlign
                             .center, // OR use textAlign for horizontal centering only
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: SizedBox(
+                      height: 150, // Adjust height as needed
+                      child: FlutterMap(
+                        options: MapOptions(
+                          initialCenter: LatLng(vendingMachine.latitude,
+                              vendingMachine.longitude),
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              // Check if vendingMachine has location data
+                              Marker(
+                                point: LatLng(vendingMachine.latitude,
+                                    vendingMachine.longitude),
+                                child: const Icon(Icons.location_pin),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
